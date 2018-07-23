@@ -10,12 +10,32 @@ function test () {
     xhttp.setRequestHeader('Content-Type', 'application/json');
  
     xhttp.onload = function() {
+
+        const JSONresponse = JSON.parse(xhttp.response);
+
+        const prevResults = document.getElementById('results');
+        if (prevResults) {
+            prevResults.parentElement.removeChild(prevResults);
+        }
+
         // Handle response here using e.g. xhttp.status, xhttp.response, xhttp.responseText
-        console.log(xhttp.status);
-        console.log(xhttp.response);
-        if (xhttp.status === 200) {
+        if (JSONresponse[0].status === 200) {
             console.log('Success');
-            parseResponseFromAPI(xhttp.response);
+            parseResponseFromAPI(JSONresponse);
+        } else {
+            const newDiv = document.createElement('div');
+            newDiv.setAttribute('id', 'results');
+
+            const h3 = document.createElement('h3');
+            h3.appendChild(document.createTextNode(JSONresponse[0].status));
+            newDiv.appendChild(h3);
+
+            const p = document.createElement('p');
+            p.appendChild(document.createTextNode(JSONresponse[1].error));
+            newDiv.appendChild(p);
+
+            document.getElementById('body').appendChild(newDiv);
+
         }
     }
  
@@ -24,11 +44,10 @@ function test () {
 
 function parseResponseFromAPI(response) {
 
-    const JSONresponse = JSON.parse(response);
-    const busList = JSONresponse.slice(1);
-    console.log(busList);
+    const busList = response.slice(1);
     
     const newDiv = document.createElement('div');
+    newDiv.setAttribute('id', 'results');
     const h2 = document.createElement('h2');
     newDiv.appendChild(h2);
     h2.appendChild(document.createTextNode('Results'));
@@ -45,13 +64,8 @@ function parseResponseFromAPI(response) {
         
         // Populate list
         busStop.buses.forEach(bus => {
-            console.log(bus.expectedArrival);
-            const timeNow = moment();
-            const arriveTime = moment(bus.expectedArrival);
-            const duration = moment.utc(arriveTime.diff(timeNow)).format("HH:mm:ss")
             const li = document.createElement('li');
-            console.log(duration);
-            li.appendChild(document.createTextNode(`${duration}: ${bus.lineId} to ${bus.destination}`));
+            li.appendChild(document.createTextNode(`${bus.expectedArrival}: ${bus.lineId} to ${bus.destination}`));
             ul.appendChild(li);
         });
 

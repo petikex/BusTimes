@@ -88,7 +88,7 @@ function getBusStopsInRadius(htmlString, res) {
 }*/
 
 function response(errorCode, res, msg) {
-    res.send([{'status': errorCode}, {'error:': msg}]);
+    res.send([{'status': errorCode}, {'error': msg}]);
 }
 
 app.listen(3000, () => {console.log('BusTimes app listening on 3000!');
