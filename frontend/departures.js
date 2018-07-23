@@ -1,4 +1,4 @@
-function test () {
+function inputAction () {
 
     const input = document.getElementById("input_filed").value;
     console.log(input);
@@ -43,6 +43,8 @@ function test () {
 }
 
 function parseResponseFromAPI(response) {
+    let longitudes = [];
+    let latitudes = [];
 
     const busList = response.slice(1);
     
@@ -53,6 +55,8 @@ function parseResponseFromAPI(response) {
     h2.appendChild(document.createTextNode('Results'));
 
     busList.forEach(busStop => {
+        longitudes.push(busStop.long);
+        latitudes.push(busStop.lat);
 
         // Creating bus stop name
         const h3 = document.createElement('h3');
