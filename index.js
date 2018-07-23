@@ -1,14 +1,19 @@
 const apiRequest = require('./apiRequest');
 const parseJson = require('./parseJSON');
 const express = require('express')
+const log = require('./Log')
+const postcdeAPI = require('./postcodeAPI');
+
 const app = express()
 app.use(express.static('frontend'));
+
 const applicationID = '7d555bb6';
 const applicationKeys = '40b776fcf10d513512447b74ca506f48';
-const log = require('./Log')
 
+// The closest bus stops API
 app.get('/departureBoards/:postcode', function (req, res) {
     const postcode = req.params.postcode;
+    
     // Format check for postcde
     if ((postcode.length !== 7) || (postcode[3] !== ' ')) {
         response(400, res, 'Wrong postcode format. Please use: XXX YYY');
@@ -16,7 +21,12 @@ app.get('/departureBoards/:postcode', function (req, res) {
         return;
     }
     
-    locateByPostCode(req.params.postcode, res);
+    // Get postcode location
+    postcodePromise = postcodeAPI.locateByPostCode(req.params.postcode, res);
+    postcodePromise.then(x => {
+        log.logger.info('Communication established with postcodes.io');
+        mainFunction(x, res);
+    });
 })
 
 function locateByPostCode(postcode, res) {

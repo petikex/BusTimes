@@ -5,8 +5,15 @@ class BusStop {
     constructor(stopName) {
         this.stopName = stopName;
         this.buses = [];
+        this.lat;
+        this.long;
     }
     
+    addLocation(lat, long) {
+        this.lat = lat;
+        this.long = long;
+    }
+
     addBus(bus) {
         this.buses.push(bus);
     }
@@ -23,6 +30,7 @@ class BusStop {
     getThisObject(limit = 5) {
         const tmpBusStop = new BusStop(this.stopName);
         tmpBusStop.buses = this.getBuses(limit);
+        tmpBusStop.setLocation(this.lat, this.long);
         return tmpBusStop;
     }
 }
