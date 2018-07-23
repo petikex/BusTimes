@@ -25,9 +25,16 @@ app.get('/departureBoards/:postcode', function (req, res) {
     postcodePromise = postcodeAPI.locateByPostCode(req.params.postcode, res);
     postcodePromise.then(x => {
         log.logger.info('Communication established with postcodes.io');
-        mainFunction(x, res);
+        getNearbyBusStops(x, res);
     });
 })
+
+
+// Returns the closest two bus stops to lat long
+app.get('./busStopsByLatLong/:lat/:long', function (req, res) {
+    const [lat, long] = [req.params.lat, req.params.long];
+    getNearbyBusStops(long, lat, res);
+});
 
 function locateByPostCode(postcode, res) {
     const url = `http://api.postcodes.io/postcodes/${postcode}`;
@@ -36,12 +43,14 @@ function locateByPostCode(postcode, res) {
     urlPromise.then(x => 
         {
             log.logger.info('Communication established with postcodes.io');
-            mainFunction(x, res);
+            const [long, lat] = parseJson.getLongLat(htmlString);
+            getNearbyBusStops(long, lat, res);
         })
 }
 
-function mainFunction(htmlString, res) {
-    const [long, lat] = parseJson.getLongLat(htmlString);
+
+// Looks for the two nearest bus stops
+function getNearbyBusStops(long, lat, res) {
 
     // Checking for valid long, lat
     if ((long === undefined) || (lat === undefined)) {
