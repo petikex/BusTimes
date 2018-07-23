@@ -4,6 +4,7 @@ const express = require('express')
 const app = express()
 const applicationID = '7d555bb6';
 const applicationKeys = '40b776fcf10d513512447b74ca506f48';
+const log = require('./Log')
 
 app.get('/departureBoards/:postcode', function (req, res) {
     locateByPostCode(req.params.postcode, res);
@@ -51,4 +52,5 @@ function getBusesByStop(stopID) {
 
 }
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.listen(3000, () => {console.log('BusTimes app listening on 3000!');
+                        log.logger.info('Application listeting on port 3000');})
