@@ -6,6 +6,14 @@ const applicationID = '7d555bb6';
 const applicationKeys = '40b776fcf10d513512447b74ca506f48';
 
 app.get('/departureBoards/:postcode', function (req, res) {
+    const postcode = req.params.postcode;
+
+    // Format check for postcde
+    if ((postcode.length !== 9) || (postcode.substr(3, 6) !== '%20')) {
+        res.send('Wrong postcode format. Please use: XXX YYY');
+        return;
+    }
+    
     locateByPostCode(req.params.postcode, res);
 })
 
@@ -17,6 +25,13 @@ function locateByPostCode(postcode, res) {
 
 function mainFunction(htmlString, res) {
     const [long, lat] = parseJson.getLongLat(htmlString);
+
+    // Checking for valid long, lat
+    if ((long === undefined) || (lat === undefined)) {
+        res.send('Could not find postcode location');
+        return;
+    }
+
     const tflURL = `https://api.tfl.gov.uk/Stoppoint?lat=${lat}&lon=${long}&stoptypes=NaptanPublicBusCoachTram&app_id=${applicationID}&app_key=${applicationKeys}`;
     const tflPromise = apiRequest.loadURL(tflURL);
     tflPromise.then(x => getBusStopsInRadius(x, res))
@@ -26,16 +41,29 @@ function mainFunction(htmlString, res) {
 function getBusStopsInRadius(htmlString, res) {
     busStopsJson = JSON.parse(htmlString);
 
-    const stopURL1 = `https://api.tfl.gov.uk/StopPoint/${busStopsJson.stopPoints[0].id}/arrivals`;
-    const stopPromise1 = apiRequest.loadURL(stopURL1);
-    const stopURL2 = `https://api.tfl.gov.uk/StopPoint/${busStopsJson.stopPoints[1].id}/arrivals`;
-    const stopPromise2 = apiRequest.loadURL(stopURL2);
+    if ((busStopsJson.stopPoints.length < 1) || (busStopsJson.stopPoints === undefined)){
+        res.send('No bus stops found');
+    }
 
-    Promise.all([stopPromise1, stopPromise2]).then(function(values) {
-        const [html0, html1] = values;
-        const currentStop0 = parseJson.parseBusStops(html0);
-        const currentStop1 = parseJson.parseBusStops(html1);
-        res.send([currentStop0.getThisObject(), currentStop1.getThisObject()]);
+    const stopPromises = [];
+
+    const stopURL1 = `https://api.tfl.gov.uk/StopPoint/${busStopsJson.stopPoints[0].id}/arrivals`;
+    stopPromises.push(apiRequest.loadURL(stopURL1));
+
+    if (busStopsJson.stopPoints > 1) {
+        const stopURL2 = `https://api.tfl.gov.uk/StopPoint/${busStopsJson.stopPoints[1].id}/arrivals`;
+        stopPromises.push(apiRequest.loadURL(stopURL2));
+    }
+
+    Promise.all(stopPromises).then(function(values) {
+        const responses = [{'status': 200}];
+
+        values.forEach(html => {
+            const currentStop = parseJson.parseBusStops(html);
+            responses.push(currentStop.getThisObject());
+        });
+
+        res.send(responses);
     })
     
 }
