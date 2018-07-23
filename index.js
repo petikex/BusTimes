@@ -11,7 +11,7 @@ app.get('/departureBoards/:postcode', function (req, res) {
 
     // Format check for postcde
     if ((postcode.length !== 9) || (postcode.substr(3, 6) !== '%20')) {
-        res.send('Wrong postcode format. Please use: XXX YYY');
+        response(400, res, 'Wrong postcode format. Please use: XXX YYY');
         return;
     }
     
@@ -37,7 +37,7 @@ function mainFunction(htmlString, res) {
 
     // Checking for valid long, lat
     if ((long === undefined) || (lat === undefined)) {
-        res.send('Could not find postcode location');
+        response(404, res, 'Could not find postcode location');
         return;
     }
 
@@ -51,7 +51,8 @@ function getBusStopsInRadius(htmlString, res) {
     busStopsJson = JSON.parse(htmlString);
 
     if ((busStopsJson.stopPoints.length < 1) || (busStopsJson.stopPoints === undefined)){
-        res.send('No bus stops found');
+        response(404, res, 'No bus stops found nearby');
+        return;
     }
     log.logger.info('Gathering data from the tdfl.api');
     const stopPromises = [];
@@ -88,5 +89,9 @@ function getBusStopsInRadius(htmlString, res) {
 
 }*/
 
+function response(errorCode, res, msg) {
+    res.send([{'status': errorCode}, {'error:': msg}]);
+}
+
 app.listen(3000, () => {console.log('BusTimes app listening on 3000!');
-                        log.logger.info('Application listeting on port 3000');})
+                        log.logger.info('Application listeting on port 3000');});
