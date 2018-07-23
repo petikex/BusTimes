@@ -20,8 +20,16 @@ app.get('/departureBoards/:postcode', function (req, res) {
 
 function locateByPostCode(postcode, res) {
     const url = `http://api.postcodes.io/postcodes/${postcode}`;
+    log.logger.info(`Gathering data about postcode ${postcode} from postcodes.io`);
+    if ((postcode.length === 7) | (postcode[3] !==' ')) {
+        log.logger.error('Invalid postcode format!');
+    }
     const urlPromise = apiRequest.loadURL(url);
-    urlPromise.then(x => mainFunction(x, res));
+    urlPromise.then(x => 
+        {
+            log.logger.info('Communication established with postcodes.io');
+            mainFunction(x, res);
+        })
 }
 
 function mainFunction(htmlString, res) {
@@ -45,7 +53,7 @@ function getBusStopsInRadius(htmlString, res) {
     if ((busStopsJson.stopPoints.length < 1) || (busStopsJson.stopPoints === undefined)){
         res.send('No bus stops found');
     }
-
+    log.logger.info('Gathering data from the tdfl.api');
     const stopPromises = [];
 
     const stopURL1 = `https://api.tfl.gov.uk/StopPoint/${busStopsJson.stopPoints[0].id}/arrivals`;
@@ -69,7 +77,7 @@ function getBusStopsInRadius(htmlString, res) {
     
 }
 
-function getBusesByStop(stopID) {
+/*function getBusesByStop(stopID) {
 
     const stopURL = `https://api.tfl.gov.uk/StopPoint/${stopID}/arrivals`;
     const stopPromise = apiRequest.loadURL(stopURL);
@@ -78,7 +86,7 @@ function getBusesByStop(stopID) {
         currentStop.displayBuses(2);
     });
 
-}
+}*/
 
 app.listen(3000, () => {console.log('BusTimes app listening on 3000!');
                         log.logger.info('Application listeting on port 3000');})
