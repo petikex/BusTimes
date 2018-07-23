@@ -30,7 +30,7 @@ class BusStop {
     getThisObject(limit = 5) {
         const tmpBusStop = new BusStop(this.stopName);
         tmpBusStop.buses = this.getBuses(limit);
-        tmpBusStop.setLocation(this.lat, this.long);
+        tmpBusStop.addLocation(this.lat, this.long);
         return tmpBusStop;
     }
 }

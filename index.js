@@ -2,7 +2,7 @@ const apiRequest = require('./apiRequest');
 const parseJson = require('./parseJSON');
 const express = require('express')
 const log = require('./Log')
-const postcdeAPI = require('./postcodeAPI');
+const postcodeAPI = require('./postcodeAPI');
 
 const app = express()
 app.use(express.static('frontend'));
@@ -22,10 +22,11 @@ app.get('/departureBoards/:postcode', function (req, res) {
     }
     
     // Get postcode location
-    postcodePromise = postcodeAPI.locateByPostCode(req.params.postcode, res);
+    postcodePromise = postcodeAPI.getPostCode(req.params.postcode);
     postcodePromise.then(x => {
         log.logger.info('Communication established with postcodes.io');
-        getNearbyBusStops(x, res);
+        const [long, lat] = parseJson.getLongLat(x);
+        getNearbyBusStops(long, lat, res);
     });
 })
 
@@ -43,7 +44,8 @@ function locateByPostCode(postcode, res) {
     urlPromise.then(x => 
         {
             log.logger.info('Communication established with postcodes.io');
-            const [long, lat] = parseJson.getLongLat(htmlString);
+            log.logger.debug(x);
+            const [long, lat] = parseJson.getLongLat(x);
             getNearbyBusStops(long, lat, res);
         })
 }
@@ -60,7 +62,7 @@ function getNearbyBusStops(long, lat, res) {
 
     const tflURL = `https://api.tfl.gov.uk/Stoppoint?lat=${lat}&lon=${long}&stoptypes=NaptanPublicBusCoachTram&app_id=${applicationID}&app_key=${applicationKeys}`;
     const tflPromise = apiRequest.loadURL(tflURL);
-    tflPromise.then(x => getBusStopsInRadius(x, res))
+    tflPromise.then(x => {getBusStopsInRadius(x, res)});
    
 }
 
