@@ -8,10 +8,10 @@ const log = require('./Log')
 
 app.get('/departureBoards/:postcode', function (req, res) {
     const postcode = req.params.postcode;
-
     // Format check for postcde
-    if ((postcode.length !== 9) || (postcode.substr(3, 6) !== '%20')) {
+    if ((postcode.length !== 7) || (postcode[3] !== ' ')) {
         response(400, res, 'Wrong postcode format. Please use: XXX YYY');
+        log.logger.error('Invalid postcode format!');
         return;
     }
     
@@ -21,9 +21,6 @@ app.get('/departureBoards/:postcode', function (req, res) {
 function locateByPostCode(postcode, res) {
     const url = `http://api.postcodes.io/postcodes/${postcode}`;
     log.logger.info(`Gathering data about postcode ${postcode} from postcodes.io`);
-    if ((postcode.length === 7) | (postcode[3] !==' ')) {
-        log.logger.error('Invalid postcode format!');
-    }
     const urlPromise = apiRequest.loadURL(url);
     urlPromise.then(x => 
         {
@@ -60,7 +57,7 @@ function getBusStopsInRadius(htmlString, res) {
     const stopURL1 = `https://api.tfl.gov.uk/StopPoint/${busStopsJson.stopPoints[0].id}/arrivals`;
     stopPromises.push(apiRequest.loadURL(stopURL1));
 
-    if (busStopsJson.stopPoints > 1) {
+    if (busStopsJson.stopPoints.length > 1) {
         const stopURL2 = `https://api.tfl.gov.uk/StopPoint/${busStopsJson.stopPoints[1].id}/arrivals`;
         stopPromises.push(apiRequest.loadURL(stopURL2));
     }
