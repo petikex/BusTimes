@@ -2,6 +2,7 @@ const apiRequest = require('./apiRequest');
 const parseJson = require('./parseJSON');
 const express = require('express')
 const app = express()
+app.use(express.static('frontend'));
 const applicationID = '7d555bb6';
 const applicationKeys = '40b776fcf10d513512447b74ca506f48';
 const log = require('./Log')
