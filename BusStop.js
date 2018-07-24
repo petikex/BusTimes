@@ -2,11 +2,12 @@ const Bus = require('./Bus')
 
 
 class BusStop {
-    constructor(stopName) {
+    constructor(stopId, stopName) {
         this.stopName = stopName;
         this.buses = [];
         this.lat;
         this.long;
+        this.stopId = stopId;
     }
     
     addLocation(lat, long) {
@@ -28,7 +29,7 @@ class BusStop {
     }
 
     getThisObject(limit = 5) {
-        const tmpBusStop = new BusStop(this.stopName);
+        const tmpBusStop = new BusStop(this.stopId, this.stopName);
         tmpBusStop.buses = this.getBuses(limit);
         tmpBusStop.addLocation(this.lat, this.long);
         return tmpBusStop;
