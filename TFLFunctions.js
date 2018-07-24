@@ -1,5 +1,5 @@
 const apiRequest = require('./apiRequest');
-
+const log = require('./Log');
 const applicationID = '7d555bb6';
 const applicationKeys = '40b776fcf10d513512447b74ca506f48';
 
@@ -20,7 +20,7 @@ function parseBusStops(htmlString) {
     }
 
     // Interested in only the first two stops
-    return busStops.stopPoints.slice(0, 2);
+    return busStopsJson.stopPoints.slice(0, 2);
     
 }
 
@@ -34,7 +34,7 @@ function displayBusStopsInRadius(busStops, res) {
 
     // Getting bus stop data (promises)
     log.logger.info('Gathering data from the tfl.api');
-    const stopPromises = requiredStops.map(x => TFLFunctions.getBusStopById);
+    const stopPromises = busStops.map(x => {log.logger.debug(x); getBusStopById(x.stopName);});
         
     // Waiting for all the response to come in
     Promise.all(stopPromises).then(function(values) {
@@ -55,4 +55,4 @@ function getBusStopById(stopID) {
     return apiRequest.loadURL(tflURL);
 }
 
-module.exports = {getBusStopsInRadius, parseBusStops, getBusStopById}
+module.exports = {getBusStopsInRadius, parseBusStops, getBusStopById, displayBusStopsInRadius}

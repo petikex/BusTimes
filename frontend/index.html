@@ -14,7 +14,7 @@
         <input id="input_filed" type="text" name="postcode">
         <input type="submit" value="Submit">
     </form>
-    <head>
+    <!--<head>
         <style>
     
           #map {
@@ -35,10 +35,7 @@
       let markers = [];
       let coordinates = getCoordinates();
         for (let i = 0;i < coordinates.long.length; i++) {
-            let location = {}
-            location.lat = coordinates.lat[i];
-            locations.long = coordinates.long[i];
-            marker.push(new google.maps.Marker({position : location, map : map}));
+            marker.push(new google.maps.Marker( {position : {lat : coordinates.lat[i], long = coordinates.long[i]}, map : map}));
         }
     }
         </script>
@@ -46,5 +43,5 @@
         <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBo2epSkvShl4jbXg4rs6ik69c-Sp2NTaQ&callback=initMap">
         </script>
-      </body>
-</html>
+      </body>-->
+</html> 

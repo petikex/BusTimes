@@ -80,19 +80,7 @@ function parseResponseFromAPI(response) {
 
     document.getElementById('body').appendChild(newDiv);
 
-
-    var uluru = {lat: -25.344, lng: 131.036};
-    var map = new google.maps.Map(
-        document.getElementById('map'), {zoom: 4, center: uluru});
-    //var marker = new google.maps.Marker({position: uluru, map: map});
-    let markers = [];
-    let coordinates = getCoordinates();
-        for (let i = 0;i < coordinates.long.length; i++) {
-            let location = {}
-            location.lat = coordinates.lat[i];
-            locations.long = coordinates.long[i];
-            markers.push(new google.maps.Marker({position : location, map : map}));
-        }
+    
 }
 
 function getCoordinates() {
@@ -101,4 +89,3 @@ function getCoordinates() {
     returnObject.lat = latitudes;
     return returnObject;
 }
-
