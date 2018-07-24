@@ -7,6 +7,7 @@ const response = require('./response');
 const applicationID = '7d555bb6';
 const applicationKeys = '40b776fcf10d513512447b74ca506f48';
 
+// Returns a promise with the nearest BusStops
 function getBusStopsInRadius(lat, long) {
     // Getting the nearest bus stops
     const tflURL = `https://api.tfl.gov.uk/Stoppoint?lat=${lat}&lon=${long}&stoptypes=NaptanPublicBusCoachTram&app_id=${applicationID}&app_key=${applicationKeys}`;
@@ -15,8 +16,8 @@ function getBusStopsInRadius(lat, long) {
 }
 
 
-// Returns the ID of bus stops
-function parseBusStops(htmlString, res) {
+// Returns the first two BusStop objects
+function parseBusStops(htmlString) {
     busStopsJson = JSON.parse(htmlString);
 
     if ((busStopsJson.stopPoints.length < 1) || (busStopsJson.stopPoints === undefined)){
@@ -35,6 +36,7 @@ function parseBusStops(htmlString, res) {
     
 }
 
+// Sends back the nearest BusStops
 function displayBusStopsInRadius(busStops, res) {
     
     // Sanity check for input
@@ -44,9 +46,7 @@ function displayBusStopsInRadius(busStops, res) {
     }
 
     // Getting bus stop data (promises)
-    log.logger.info('Gathering data from the tfl.api');
-    log.logger.debug('BusStops: ')
-    log.logger.debug(busStops);
+    log.logger.debug('Starting querying the arrivals to bus stops');
     const stopPromises = busStops.map(busStop => {
 
         // Querrying arriving buses
@@ -61,9 +61,8 @@ function displayBusStopsInRadius(busStops, res) {
             
     // Waiting for all the response to come in => these updates busStops
     // Results have already been parsed individually
-    log.logger.debug(stopPromises);
-    Promise.all(stopPromises).then(function(values) {
-        console.log(busStops);
+    // Only need to send the answer
+    Promise.all(stopPromises).then(function() {
         const responses = [{'status': 200}];
     
         busStops.forEach(busStop => {
@@ -75,21 +74,12 @@ function displayBusStopsInRadius(busStops, res) {
     
 }
 
+// Returns a new promise with content of response to StopPoint arrivlas api
 function getBusStopById(stopId) {
     const tflURL = `https://api.tfl.gov.uk/StopPoint/${stopId}/arrivals?app_id=${applicationID}&app_key=${applicationKeys}`;
-    log.logger.debug(`Requesting ${tflURL}`);
+    log.logger.debug(`Requesting arrivals to stop ${stopId}`);
     const newPromise = apiRequest.loadURL(tflURL);
-    log.logger.debug('New promise created: ');
-    log.logger.debug(newPromise);
     return newPromise;
 }
-
-// A little helper function
-function zip(arrays) {
-    return arrays[0].map(function(_,i){
-        return arrays.map(function(array){return array[i]})
-    });
-}
-
 
 module.exports = {getBusStopsInRadius, parseBusStops, getBusStopById, displayBusStopsInRadius}

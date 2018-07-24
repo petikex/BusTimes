@@ -1,6 +1,7 @@
 const bus = require('./Bus');
 
 // Parse TfL's arriving buses response
+// Adds Buses to BusStops, returns null
 function parseBusStop(busStop, htmlString) {
     const jsonArriving = JSON.parse(htmlString);
 
@@ -10,6 +11,7 @@ function parseBusStop(busStop, htmlString) {
         return 1;
     });
     
+    // Add Buses to existing BusStops
     jsonArriving.forEach(arrivingBus => {
         busStop.addBus(new bus.Bus(arrivingBus.lineId, arrivingBus.expectedArrival, arrivingBus.destinationName));
     });
@@ -17,6 +19,7 @@ function parseBusStop(busStop, htmlString) {
 }
 
 // Parse postcode.io's incoming html
+// Returns [long, lat]
 function getLongLat(htmlString) {
     const jsonPostcodes = JSON.parse(htmlString);
     return [jsonPostcodes.result.longitude, jsonPostcodes.result.latitude];
