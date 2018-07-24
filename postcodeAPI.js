@@ -1,3 +1,4 @@
+"use strict"
 const log = require('./Log')
 const apiRequest = require('./apiRequest');
 

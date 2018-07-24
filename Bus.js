@@ -1,7 +1,8 @@
+"use strict"
 const moment = require('Moment');
 
 class Bus {
-    
+
     constructor(lineId, expectedArrival, destination) {
         this.lineId = lineId;
         this.expectedArrival = moment(expectedArrival).format('HH:mm:ss');
