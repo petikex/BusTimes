@@ -1,5 +1,5 @@
+"use strict"
 const Bus = require('./Bus')
-
 
 class BusStop {
     constructor(stopId, stopName) {

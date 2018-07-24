@@ -1,5 +1,3 @@
-let locations = []
-
 function inputAction () {
 
     const input = document.getElementById("input_filed").value;
@@ -46,56 +44,59 @@ function inputAction () {
 
 function parseResponseFromAPI(response) {
     
-
+    // Getting rid off the status code
     const busList = response.slice(1);
-    
+
     const newDiv = document.createElement('div');
     newDiv.setAttribute('id', 'results');
-    const h2 = document.createElement('h2');
-    newDiv.appendChild(h2);
-    h2.appendChild(document.createTextNode('Results'));
-
-    busList.forEach(busStop => {
-        locations.push({lng : busStop.long, lat :busStop.lat});
-        // Creating bus stop name
-        const h3 = document.createElement('h3');
-        h3.appendChild(document.createTextNode(busStop.stopName));
-        newDiv.appendChild(h3)
-
-        // Create list
-        const ul = document.createElement('ul');
-        
-        // Populate list
-        busStop.buses.forEach(bus => {
-            const li = document.createElement('li');
-            li.appendChild(document.createTextNode(`${bus.expectedArrival}: ${bus.lineId} to ${bus.destination}`));
-            ul.appendChild(li);
-        });
-
-        newDiv.appendChild(ul);
-    });
+    
+    // Google maps stuff
     document.getElementById('body').appendChild(newDiv);
+
+    // Calculating the average posotion => centre of map
     let avgLat = 0;
     let avgLng = 0;
-    let desrciptions = {};
-    locations.forEach(location => {
-        avgLat = avgLat + location.lat;
-        avgLng = avgLng + location.lng;
+    busList.forEach(busStop => {
+        avgLat = avgLat + busStop.lat;
+        avgLng = avgLng + busStop.long;
     })
-    let numofLocations = locations.length;
+    const numofLocations = busList.length;
     avgLat = avgLat/numofLocations;
     avgLng = avgLng/numofLocations;
-    let googleMap = new google.maps.Map(document.getElementById("map"), {
+
+    // Setting up map
+    const googleMap = new google.maps.Map(document.getElementById("map"), {
         center: {lat: avgLat, lng: avgLng},
         zoom: 18
-      });
-    locations.forEach(location => {
-        let marker = new google.maps.Marker({
-            position: location,
+    });
+
+    // Adding markers
+    busList.forEach(busStop => {
+        const marker = new google.maps.Marker({
+            position: {lng: busStop.long, lat: busStop.lat},
             title:"Hello World!"
-       })
+        })
+        const descriptionString = createDescription(busStop);
+        const infoWindow = new google.maps.InfoWindow({
+            content: descriptionString
+        });
+        marker.addListener('click', function() {
+            infoWindow.open(googleMap, marker);
+        });
+
        marker.setMap(googleMap);
     })
        
+}
+
+// Creates the description in html from
+function createDescription(busStop) {
+    let description = `<h3>${busStop.stopName}</h3><ul>`;
+
+    busStop.buses.forEach(bus => {
+        description += `<li>${bus.expectedArrival}: ${bus.lineId} to ${bus.destination}</li>`;
+    });
+    description += '</ul>';
+    return description;
 }
 
