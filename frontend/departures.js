@@ -77,13 +77,15 @@ function parseResponseFromAPI(response) {
         newDiv.appendChild(ul);
     });
     console.log('Testing google maps markers');
-    initMap(longitudes, latitudes);
+    console.log(longitudes);
+    console.log(latitudes);
+    initMap();
     document.getElementById('body').appendChild(newDiv);
 
     
 }
 
-function initMap(longitudes, latitudes) {
+/*function initMap(longitudes, latitudes) {
     const london = {lat: 0, lng: 51.5}
     var map = new google.maps.Map(document.getElementById('map'), 
         {zoom : 4, center : london}
@@ -92,4 +94,10 @@ function initMap(longitudes, latitudes) {
         var marker = new google.maps.Marker({position : {lng : longitudes[i], lat : latitudes[i]}});
         marker.setMap(map);
     }
+}*/
+function initMap() {
+    const london = {lat: 0, lng: 51.5}
+    var map = new google.maps.Map(document.getElementById('map'), 
+        {zoom : 4, center : london}
+    );
 }
