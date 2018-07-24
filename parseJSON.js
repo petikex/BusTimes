@@ -1,26 +1,25 @@
 const bus = require('./Bus');
-const busStop = require('./BusStop');
 
+// Parse TfL's arriving buses response
+function parseBusStop(busStop, htmlString) {
+    const jsonArriving = JSON.parse(htmlString);
 
-function parseBusStops(htmlString) {
-    const jsonBusStops = JSON.parse(htmlString);
-    jsonBusStops.sort(function(a, b) {
+    // Sorting the buses according to arrival time
+    jsonArriving.sort(function(a, b) {
         if (a.expectedArrival < b.expectedArrival) return -1;
         return 1;
     });
-    const stationName = jsonBusStops[0].stationName;
-    const currentStop = new busStop.BusStop(stationName);
     
-    for (let i = 0; i<jsonBusStops.length; i++) {
-        currentStop.addBus(new bus.Bus(jsonBusStops[i].lineId,jsonBusStops[i].expectedArrival,jsonBusStops[i].destinationName));
-    }
+    jsonArriving.forEach(arrivingBus => {
+        busStop.addBus(new bus.Bus(arrivingBus.lineId, arrivingBus.expectedArrival, arrivingBus.destinationName));
+    });
 
-    return currentStop;
 }
 
+// Parse postcode.io's incoming html
 function getLongLat(htmlString) {
     const jsonPostcodes = JSON.parse(htmlString);
     return [jsonPostcodes.result.longitude, jsonPostcodes.result.latitude];
 }
 
-module.exports = {parseBusStops, getLongLat}
+module.exports = {parseBusStop, getLongLat}
