@@ -53,8 +53,15 @@ function getNearbyBusStops(long, lat, res) {
     // Getting the nearest bus stops
     const tflPromise = TFLFunctions.getBusStopsInRadius(lat, long);
     tflPromise.then(x => {
-        const busStops = TFLFunctions.parseBusStops(x);
-        TFLFunctions.displayBusStopsInRadius(busStops, res);
+        try{
+            const busStops = TFLFunctions.parseBusStops(x);
+            TFLFunctions.displayBusStopsInRadius(busStops, res);
+        } catch (err) {
+
+            // If an error occured while processing data
+            log.logger.err(err.msg);
+            response.sendResponse(err.code, res, err.msg);
+        }
     });
    
 }
