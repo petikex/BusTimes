@@ -1,3 +1,5 @@
+let locations = []
+
 function inputAction () {
 
     const input = document.getElementById("input_filed").value;
@@ -52,13 +54,9 @@ function parseResponseFromAPI(response) {
     const h2 = document.createElement('h2');
     newDiv.appendChild(h2);
     h2.appendChild(document.createTextNode('Results'));
-    let longitudes = [];
-    let latitudes = [];
 
     busList.forEach(busStop => {
-        longitudes.push(busStop.long);
-        latitudes.push(busStop.lat);
-
+        locations.push({lng : busStop.lng, lat :busStop.lat});
         // Creating bus stop name
         const h3 = document.createElement('h3');
         h3.appendChild(document.createTextNode(busStop.stopName));
@@ -76,28 +74,11 @@ function parseResponseFromAPI(response) {
 
         newDiv.appendChild(ul);
     });
-    console.log('Testing google maps markers');
-    console.log(longitudes);
-    console.log(latitudes);
-    initMap();
     document.getElementById('body').appendChild(newDiv);
-
-    
+    var googleMap = document.getElementById('map');
+    console.log(googleMap);
+    //var marker = new google.maps.Marker({position : {lat : 51.6, lng : 0}});
+    //marker.setMap(map);
+    //google.maps.event.trigger(map, 'resize');   
 }
 
-/*function initMap(longitudes, latitudes) {
-    const london = {lat: 0, lng: 51.5}
-    var map = new google.maps.Map(document.getElementById('map'), 
-        {zoom : 4, center : london}
-    );
-    for (let i = 0; i<longitudes.length; i++) {
-        var marker = new google.maps.Marker({position : {lng : longitudes[i], lat : latitudes[i]}});
-        marker.setMap(map);
-    }
-}*/
-function initMap() {
-    const london = {lat: 0, lng: 51.5}
-    var map = new google.maps.Map(document.getElementById('map'), 
-        {zoom : 4, center : london}
-    );
-}
