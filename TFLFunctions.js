@@ -2,6 +2,7 @@ const apiRequest = require('./apiRequest');
 const log = require('./Log');
 const BusStopLib = require('./BusStop');
 const parseJson = require('./parseJSON');
+const response = require('./response');
 
 const applicationID = '7d555bb6';
 const applicationKeys = '40b776fcf10d513512447b74ca506f48';
@@ -15,12 +16,11 @@ function getBusStopsInRadius(lat, long) {
 
 
 // Returns the ID of bus stops
-function parseBusStops(htmlString) {
+function parseBusStops(htmlString, res) {
     busStopsJson = JSON.parse(htmlString);
 
     if ((busStopsJson.stopPoints.length < 1) || (busStopsJson.stopPoints === undefined)){
-        response.sendResponse(404, res, 'No bus stops found nearby');
-        return;
+        throw {code: 404, msg: 'No bus stops found nearby'};
     }
 
     // Creating BusStop objects
