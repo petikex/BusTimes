@@ -1,3 +1,4 @@
+"use strict"
 const bus = require('./Bus');
 
 // Parse TfL's arriving buses response

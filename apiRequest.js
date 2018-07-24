@@ -1,3 +1,5 @@
+"use strict"
+
 const rp = require('request-promise');
 const log = require('./Log')
 

@@ -1,3 +1,5 @@
+"use strict"
+
 const apiRequest = require('./apiRequest');
 const log = require('./Log');
 const BusStopLib = require('./BusStop');
@@ -18,7 +20,7 @@ function getBusStopsInRadius(lat, long) {
 
 // Returns the first two BusStop objects
 function parseBusStops(htmlString) {
-    busStopsJson = JSON.parse(htmlString);
+    const busStopsJson = JSON.parse(htmlString);
 
     if ((busStopsJson.stopPoints.length < 1) || (busStopsJson.stopPoints === undefined)){
         throw {code: 404, msg: 'No bus stops found nearby'};

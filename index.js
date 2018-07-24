@@ -1,3 +1,5 @@
+"use strict"
+
 const parseJson = require('./parseJSON');
 const express = require('express')
 const log = require('./Log')
@@ -11,8 +13,8 @@ app.use(express.static('frontend'));
 // The closest bus stops API
 app.get('/departureBoards/:postcode', function (req, res) {
 
-    console.log(`./departureBoards has been requested with postcode=${postcode}`);
-    log.logger.info(`./busStopsByLatLong has been requested with postcode=${postcode}`);
+    console.log(`./departureBoards has been requested with postcode=${req.params.postcode}`);
+    log.logger.info(`./busStopsByLatLong has been requested with postcode=${req.params.postcode}`);
     const postcode = req.params.postcode;
     
     // Format check for postcde
@@ -23,7 +25,7 @@ app.get('/departureBoards/:postcode', function (req, res) {
     }
     
     // Get postcode location
-    postcodePromise = postcodeAPI.getPostCode(req.params.postcode);
+    const postcodePromise = postcodeAPI.getPostCode(req.params.postcode);
     postcodePromise.then(x => {
         log.logger.info('Communication established with postcodes.io');
         const [long, lat] = parseJson.getLongLat(x);
