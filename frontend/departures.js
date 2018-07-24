@@ -1,6 +1,3 @@
-let longitudes = [];
-let latitudes = [];
-
 function inputAction () {
 
     const input = document.getElementById("input_filed").value;
@@ -55,6 +52,8 @@ function parseResponseFromAPI(response) {
     const h2 = document.createElement('h2');
     newDiv.appendChild(h2);
     h2.appendChild(document.createTextNode('Results'));
+    let longitudes = [];
+    let latitudes = [];
 
     busList.forEach(busStop => {
         longitudes.push(busStop.long);
@@ -77,15 +76,20 @@ function parseResponseFromAPI(response) {
 
         newDiv.appendChild(ul);
     });
-
+    console.log('Testing google maps markers');
+    initMap(longitudes, latitudes);
     document.getElementById('body').appendChild(newDiv);
 
     
 }
 
-function getCoordinates() {
-    let returnObject = {};
-    returnObject.long = longitudes;
-    returnObject.lat = latitudes;
-    return returnObject;
+function initMap(longitudes, latitudes) {
+    const london = {lat: 0, lng: 51.5}
+    var map = new google.maps.Map(document.getElementById('map'), 
+        {zoom : 4, center : london}
+    );
+    for (let i = 0; i<longitudes.length; i++) {
+        var marker = new google.maps.Marker({position : {lng : longitudes[i], lat : latitudes[i]}});
+        marker.setMap(map);
+    }
 }
