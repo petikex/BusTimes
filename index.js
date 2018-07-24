@@ -1,4 +1,3 @@
-const apiRequest = require('./apiRequest');
 const parseJson = require('./parseJSON');
 const express = require('express')
 const log = require('./Log')
@@ -6,17 +5,20 @@ const postcodeAPI = require('./postcodeAPI');
 const response = require('./response')
 const TFLFunctions = require('./TFLFunctions');
 
-const app = express()
+const app = express();
 app.use(express.static('frontend'));
 
 // The closest bus stops API
 app.get('/departureBoards/:postcode', function (req, res) {
+
+    console.log(`./departureBoards has been requested with postcode=${postcode}`);
+    log.logger.info(`./busStopsByLatLong has been requested with postcode=${postcode}`);
     const postcode = req.params.postcode;
     
     // Format check for postcde
     if ((postcode.length !== 7) || (postcode[3] !== ' ')) {
         response.sendResponse(400, res, 'Wrong postcode format. Please use: XXX YYY');
-        log.logger.error('Invalid postcode format!');
+        log.logger.error(`Invalid postcode format! (Received ${postcode})`);
         return;
     }
     
@@ -32,13 +34,17 @@ app.get('/departureBoards/:postcode', function (req, res) {
 
 // Returns the closest two bus stops to lat long
 app.get('./busStopsByLatLong/:lat/:long', function (req, res) {
+    console.log(`./busStopsByLatLong has been requested with lat=${req.params.lat} and long=${long}`);
+    log.logger.info(`./busStopsByLatLong has been requested with lat=${req.params.lat} and long=${long}`);
     const [lat, long] = [req.params.lat, req.params.long];
     getNearbyBusStops(long, lat, res);
 });
 
 
-app.listen(3000, () => {console.log('BusTimes app listening on 3000!');
-                        log.logger.info('Application listeting on port 3000');});
+app.listen(3000, () => {
+    console.log('BusTimes app listening on 3000!');
+    log.logger.info('Application listeting on port 3000');
+});
 
 
 // Looks for the two nearest bus stops
@@ -52,14 +58,20 @@ function getNearbyBusStops(long, lat, res) {
 
     // Getting the nearest bus stops
     const tflPromise = TFLFunctions.getBusStopsInRadius(lat, long);
-    tflPromise.then(x => {
+    tflPromise.then(rawBusStop => {
         try{
-            const busStops = TFLFunctions.parseBusStops(x);
+            const busStops = TFLFunctions.parseBusStops(rawBusStop);
             TFLFunctions.displayBusStopsInRadius(busStops, res);
         } catch (err) {
 
-            // If an error occured while processing data
-            log.logger.err(err.msg);
+            // If an unknown error occured send 500
+            if (!err.code) {
+                log.logger.error(err);
+                response.sendResponse(500, res, 'Internal server error :(\nPlease try again');
+            }
+
+            // If a known error occured send error message
+            log.logger.error(err.msg);
             response.sendResponse(err.code, res, err.msg);
         }
     });
