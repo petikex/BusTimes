@@ -9,25 +9,42 @@
   </head>
   <body id="body">
     <h1>BusBoard</h1>
-    <form action =javascript:void(0)"" onsubmit="  test();">
+    <form action =javascript:void(0)"" onsubmit="  inputAction();">
         Postcode:<br>
         <input id="input_filed" type="text" name="postcode">
         <input type="submit" value="Submit">
     </form>
-<!--
-    <div id="results">
-        <h2>Results</h2>
-        <h3>Example stop 1</h3>
-        <ul>
-            <li id="test">2 minutes: 123 to Example Street</li>
-            <li>3 minutes: 456 to Fantasy Land</li>
-        </ul>
-        <h3>Example stop 2</h3>
-        <ul>
-            <li>1 minute: 123 to Example Street</li>
-            <li>4 minutes: 456 to Fantasy Land</li>
-        </ul>
-    </div>
-  </body>
--->
+    <head>
+        <style>
+    
+          #map {
+            height: 400px;  
+            width: 100%;  
+           }
+        </style>
+      </head>
+      <body>
+        <h3>My Google Maps Demo</h3>
+        <div id="map"></div>
+        <script>
+    function initMap() {
+      var uluru = {lat: -25.344, lng: 131.036};
+      var map = new google.maps.Map(
+          document.getElementById('map'), {zoom: 4, center: uluru});
+      //var marker = new google.maps.Marker({position: uluru, map: map});
+      let markers = [];
+      let coordinates = getCoordinates();
+        for (let i = 0;i < coordinates.long.length; i++) {
+            let location = {}
+            location.lat = coordinates.lat[i];
+            locations.long = coordinates.long[i];
+            marker.push(new google.maps.Marker({position : location, map : map}));
+        }
+    }
+        </script>
+        
+        <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBo2epSkvShl4jbXg4rs6ik69c-Sp2NTaQ&callback=initMap">
+        </script>
+      </body>
 </html>

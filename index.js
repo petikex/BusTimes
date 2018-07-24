@@ -21,11 +21,11 @@ app.get('/departureBoards/:postcode', function (req, res) {
     }
     
     // Get postcode location
-    postcodePromise = postcodeAPI.getPostCode(req.params.postcode, res);
+    postcodePromise = postcodeAPI.getPostCode(req.params.postcode);
     postcodePromise.then(x => {
         log.logger.info('Communication established with postcodes.io');
         const [long, lat] = parseJson.getLongLat(x);
-        getNearbyBusStops(x, res);
+        getNearbyBusStops(long, lat, res);
     });
 })
 
