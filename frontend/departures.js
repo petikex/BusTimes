@@ -12,7 +12,7 @@ function inputAction () {
     xhttp.setRequestHeader('Content-Type', 'application/json');
  
     xhttp.onload = function() {
-
+        console.log(xhttp.response);
         const JSONresponse = JSON.parse(xhttp.response);
 
         const prevResults = document.getElementById('results');
@@ -56,7 +56,7 @@ function parseResponseFromAPI(response) {
     h2.appendChild(document.createTextNode('Results'));
 
     busList.forEach(busStop => {
-        locations.push({lng : busStop.lng, lat :busStop.lat});
+        locations.push({lng : busStop.long, lat :busStop.lat});
         // Creating bus stop name
         const h3 = document.createElement('h3');
         h3.appendChild(document.createTextNode(busStop.stopName));
@@ -75,10 +75,27 @@ function parseResponseFromAPI(response) {
         newDiv.appendChild(ul);
     });
     document.getElementById('body').appendChild(newDiv);
-    var googleMap = document.getElementById('map');
-    console.log(googleMap);
-    //var marker = new google.maps.Marker({position : {lat : 51.6, lng : 0}});
-    //marker.setMap(map);
-    //google.maps.event.trigger(map, 'resize');   
+    let avgLat = 0;
+    let avgLng = 0;
+    let desrciptions = {};
+    locations.forEach(location => {
+        avgLat = avgLat + location.lat;
+        avgLng = avgLng + location.lng;
+    })
+    let numofLocations = locations.length;
+    avgLat = avgLat/numofLocations;
+    avgLng = avgLng/numofLocations;
+    let googleMap = new google.maps.Map(document.getElementById("map"), {
+        center: {lat: avgLat, lng: avgLng},
+        zoom: 18
+      });
+    locations.forEach(location => {
+        let marker = new google.maps.Marker({
+            position: location,
+            title:"Hello World!"
+       })
+       marker.setMap(googleMap);
+    })
+       
 }
 

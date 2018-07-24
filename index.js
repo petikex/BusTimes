@@ -11,8 +11,8 @@ app.use(express.static('frontend'));
 // The closest bus stops API
 app.get('/departureBoards/:postcode', function (req, res) {
 
-    console.log(`./departureBoards has been requested with postcode=${postcode}`);
-    log.logger.info(`./busStopsByLatLong has been requested with postcode=${postcode}`);
+    console.log(`./departureBoards has been requested with postcode=${req.params.postcode}`);
+    log.logger.info(`./busStopsByLatLong has been requested with postcode=${req.params.postcode}`);
     const postcode = req.params.postcode;
     
     // Format check for postcde
